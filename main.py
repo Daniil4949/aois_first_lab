@@ -239,7 +239,7 @@ def get_binary(value_str):
 
 def division(dividend, divisor):
     if divisor == '0':
-        print("Divisor cannot be zero.")
+        raise Exception("Divisor cannot be zero.")
     else:
         dividend = get_binary(dividend)
         if len(dividend) < 8:
@@ -359,7 +359,6 @@ def floating_point_summary(first_number: (int, float),
     floating_second: list[str, str, str] = convert_to_floating_point(second_number)
     floating_first, floating_second = normalizing(floating_first, floating_second)
     new_floating_point = mantissa_sum(floating_first, floating_second)
-
     return new_floating_point
 
 
@@ -378,28 +377,28 @@ def floating_point_to_decimal(floating_point_number: list[str, str, str]):
 
 
 def multiplication(first_num, sec_num):
-    answer = ["0" for i in range(16)]
+    answer = ["0" for _ in range(16)]
     if (first_num < 0) or (sec_num < 0):
         answer[0] = '1'
     if (first_num < 0) and (sec_num < 0):
         answer[0] = '0'
     first_num, sec_num = abs(int(first_num)), abs(int(sec_num))
     if abs(first_num * sec_num) > 32767:
-        return "You are out of range"
+        raise Exception("You are out of range")
     else:
-        temp_len_for_massive = len(convert(sec_num))
+        len_array = len(convert(sec_num))
         first_num, sec_num = to_straight_code(first_num), to_straight_code(sec_num)
-        for i in range(temp_len_for_massive):
-            temp_mas = ['0' for i in range(16)]
+        for i in range(len_array):
+            additional_array = ['0' for i in range(16)]
             overload = 0
             for index in range(15):
                 index = 15 - index
-                temp_mas[index] = int(sec_num[15 - i]) * int(first_num[index])
-                temp_f, temp_s = int(answer[index - i]), int(temp_mas[index])
-                if temp_f + temp_s + overload < 2:
-                    answer[index - i] = str(temp_f + temp_s + overload)
+                additional_array[index] = int(sec_num[15 - i]) * int(first_num[index])
+                first_additional_value, second_additional_value = int(answer[index - i]), int(additional_array[index])
+                if first_additional_value + second_additional_value + overload < 2:
+                    answer[index - i] = str(first_additional_value + second_additional_value + overload)
                     overload = 0
-                elif temp_f + temp_s + overload == 2:
+                elif first_additional_value + second_additional_value + overload == 2:
                     answer[index - i] = '0'
                     overload = 1
                 else:
@@ -468,4 +467,4 @@ test_addition(6, -12)
 test_subtraction(3, 7)
 test_multiplication(11, 21)
 test_division(25, 7)
-test_floating_point_addition(4.2, 2.5)
+test_floating_point_addition(0.5, 10.625)
