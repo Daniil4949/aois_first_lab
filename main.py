@@ -322,12 +322,14 @@ def to_straight_code(number, bits=16):
 
 def test_addition(x, y) -> None:
     print("Addition")
-    addition_two(x, y)
+    result = addition_two(x, y)
+    print(to_decimal_value("".join(result)))
 
 
 def test_subtraction(x, y) -> None:
     print("Subtraction")
-    addition_two(x, -y)
+    result = addition_two(x, -y)
+    print(to_decimal_value("".join(result)))
 
 
 def test_multiplication(x, y) -> None:
