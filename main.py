@@ -153,8 +153,6 @@ def division(dividend, divisor):
 
 
 def convert_to_floating_point(number: (int, float)):
-    if number == 0:
-        return ["0"] + list("01111111") + list("0" * 23)
     if number < 0:
         sign = "1"
     else:
@@ -359,4 +357,4 @@ test_addition(6, -12)
 test_subtraction(3, 7)
 test_multiplication(11, 21)
 test_division(25, 7)
-test_floating_point_addition(0.5, 5.5)
+test_floating_point_addition(2.5, 5.9)
