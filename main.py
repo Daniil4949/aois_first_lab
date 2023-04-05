@@ -1,24 +1,59 @@
-def check_positive(value: (int, float)):
-    return value > 0
-
-
-def int_to_binary(value: int, bit_number: int = 16) -> str:
-    result: str = ""
-    if not check_positive(value):
-        minus_bit = "1"
-        value *= -1
-    else:
-        minus_bit = "0"
-    while value != 0:
-        result = str(value % 2) + result
-        value = value // 2
-    result = minus_bit + result
-    result = result[:1] + "0" * (bit_number - len(result)) + result[1:]
+def shift_left(value):
+    result = value[1:]
+    result.append("0")
     return result
 
 
-def float_to_binary(value: float, bit_number: int = 16) -> str:
-    if not check_positive(value):
+def complement(value):
+    result = []
+    invert = False
+    for i in reversed(value):
+        if i == "0" and invert is False:
+            result.append("0")
+        elif i == "1" and invert is False:
+            invert = True
+            result.append("1")
+        elif i == "1":
+            result.append("0")
+        else:
+            result.append("1")
+    result.reverse()
+    return result
+
+
+def list_addition(first_value, second_value, bits=8):
+    summary = ["0" for _ in range(bits)]
+    carry: int = 0
+    for i in range(bits - 1, -1, -1):
+        if first_value[i] == "0" and second_value[i] == "0" and carry == 0:
+            summary[i] = "0"
+            carry = 0
+        elif first_value[i] == "0" and second_value[i] == "0" and carry == 1:
+            summary[i] = "1"
+            carry = 0
+        elif first_value[i] == "0" and second_value[i] == "1" and carry == 0:
+            summary[i] = "1"
+            carry = 0
+        elif first_value[i] == "0" and second_value[i] == "1" and carry == 1:
+            summary[i] = "0"
+            carry = 1
+        elif first_value[i] == "1" and second_value[i] == "0" and carry == 0:
+            summary[i] = "1"
+            carry = 0
+        elif first_value[i] == "1" and second_value[i] == "0" and carry == 1:
+            summary[i] = "0"
+            carry = 1
+        elif first_value[i] == "1" and second_value[i] == "1" and carry == 0:
+            summary[i] = "0"
+            carry = 1
+        elif first_value[i] == "1" and second_value[i] == "1" and carry == 1:
+            summary[i] = "1"
+            carry = 1
+    return summary
+
+
+def float_to_binary(value: float, bit_number: int = 16):
+    if value < 0:
         minus_bit = "1"
         value *= -1
     else:
@@ -50,177 +85,24 @@ def to_decimal_value(binary_value: str) -> int:
         return -number
 
 
-def is_binary_value_positive(binary_value: str) -> bool:
-    return binary_value[0] == "0"
+def binary_greater(first_value: str, second_value: str) -> bool:
+    first_example, second_example = exponent(first_value), exponent(second_value)
+    return first_example > second_example
 
 
-def binary_absolute(binary_value: str) -> str:
-    return "0" + binary_value[1:]
-
-
-def binary_module_greater_than(first_value: str, second_value: str) -> bool:
-    for i in range(len(first_value)):
-        if first_value[i] == "1" and second_value[i] == "0":
-            return True
-        elif first_value[i] == "0" and second_value[i] == "1":
-            return False
-    return False
-
-
-def binary_equality(first_value: str, second_value: str) -> bool:
-    return first_value == second_value
-
-
-def binary_greater_than(first_value: str, second_value: str) -> bool:
-    if first_value[0] == "0" and second_value[0] == "1":
-        return True
-    elif first_value[0] == "1" and second_value[0] == "0":
-        return False
-    elif first_value[0] == "0" and second_value[0] == "0":
-        return binary_module_greater_than(first_value[1:], second_value[1:])
+def int_to_binary(value: int, bits: int = 16) -> str:
+    result: str = ""
+    if value < 0:
+        minus_bit = "1"
+        value *= -1
     else:
-        return not binary_module_greater_than(first_value[1:], second_value[1:])
-
-
-def binary_values_addition(first_value: str, second_value: str) -> str:
-    binary_first: str = ""
-    binary_second: str = ""
-    if is_binary_value_positive(first_value) and is_binary_value_positive(second_value):
-        return addition(first_value, second_value)
-    if first_value[0] == "0":
-        binary_first: str = first_value
-    if first_value[0] == "1":
-        binary_first = full_complement(first_value)
-    if second_value[0] == "0":
-        binary_second: str = second_value
-    if second_value[0] == "1":
-        binary_second = full_complement(second_value)
-    return full_complement(addition(binary_first,
-                                    binary_second))
-
-
-def binary_int_sum(first_int_value: int, second_int_number: int) -> str:
-    binary_first_value: str = int_to_binary(first_int_value)
-    binary_second_value: str = int_to_binary(second_int_number)
-    return binary_values_addition(binary_first_value, binary_second_value)
-
-
-def binary_difference(first_number: int, second_number: int) -> str:
-    return binary_int_sum(first_number, -second_number)
-
-
-def addition(first_value: str, second_value: str) -> str:
-    if len(first_value) < len(second_value):
-        first_value = "0" * (len(second_value) - len(first_value)) + first_value
-    else:
-        second_value = "0" * (len(first_value) - len(second_value)) + second_value
-    additional_value: bool = False
-    binary_result = ""
-    for i in range(len(first_value) - 1, -1, -1):
-        if first_value[i] == "0" and second_value[i] == "0":
-            if additional_value:
-                binary_result = "1" + binary_result
-            else:
-                binary_result = "0" + binary_result
-            additional_value = False
-        elif ((first_value[i] == "1" and second_value[i] == "0")
-              or (first_value[i] == "0" and second_value[i] == "1")):
-            if additional_value:
-                binary_result = "0" + binary_result
-            else:
-                binary_result = "1" + binary_result
-        else:
-            if additional_value:
-                binary_result = "1" + binary_result
-            else:
-                binary_result = "0" + binary_result
-            additional_value = True
-    return binary_result
-
-
-def neg_complement(binary_number: str) -> str:
-    if binary_number[0] == "0":
-        return binary_number
-    result = []
-    for item in binary_number[1:]:
-        if item == ".":
-            result.append(item)
-        elif item == "0":
-            result.append("1")
-        elif item == "1":
-            result.append("0")
-    ones_complement = "1" + "".join(result)
-    return ones_complement
-
-
-def full_complement(binary_number: str) -> str:
-    if binary_number[0] == "0":
-        return binary_number
-    binary_number = neg_complement(binary_number)
-    return addition(binary_number,
-                    int_to_binary(1, bit_number=len(binary_number)))
-
-
-def additional_full_complement(binary_value: str) -> str:
-    if binary_value[0] == "0":
-        return "0" + binary_value
-    binary_value = neg_complement(binary_value)
-    return "1" + addition(binary_value,
-                          int_to_binary(1, bit_number=len(binary_value)))
-
-
-def shift_left(value):
-    result = value[1:]
-    result.append("0")
+        minus_bit = "0"
+    while value != 0:
+        result = str(value % 2) + result
+        value = value // 2
+    result = minus_bit + result
+    result = result[:1] + "0" * (bits - len(result)) + result[1:]
     return result
-
-
-def complement(value):
-    result = []
-    invert = False
-    for i in reversed(value):
-        if i == "0" and invert is False:
-            result.append("0")
-        elif i == "1" and invert is False:
-            invert = True
-            result.append("1")
-        elif i == "1":
-            result.append("0")
-        else:
-            result.append("1")
-    result.reverse()
-    return result
-
-
-def list_addition(first_value, second_value):
-    summary = ["0", "0", "0", "0", "0", "0", "0", "0"]
-    carry = 0
-    for i in range(7, -1, -1):
-        if first_value[i] == "0" and second_value[i] == "0" and carry == 0:
-            summary[i] = "0"
-            carry = 0
-        elif first_value[i] == "0" and second_value[i] == "0" and carry == 1:
-            summary[i] = "1"
-            carry = 0
-        elif first_value[i] == "0" and second_value[i] == "1" and carry == 0:
-            summary[i] = "1"
-            carry = 0
-        elif first_value[i] == "0" and second_value[i] == "1" and carry == 1:
-            summary[i] = "0"
-            carry = 1
-        elif first_value[i] == "1" and second_value[i] == "0" and carry == 0:
-            summary[i] = "1"
-            carry = 0
-        elif first_value[i] == "1" and second_value[i] == "0" and carry == 1:
-            summary[i] = "0"
-            carry = 1
-        elif first_value[i] == "1" and second_value[i] == "1" and carry == 0:
-            summary[i] = "0"
-            carry = 1
-        elif first_value[i] == "1" and second_value[i] == "1" and carry == 1:
-            summary[i] = "1"
-            carry = 1
-    return summary
 
 
 def get_binary(value_str):
@@ -270,20 +152,9 @@ def division(dividend, divisor):
         return "".join(second_value)
 
 
-def fixed_point_to_decimal(fixed_point_number: str) -> float:
-    fraction: str = fixed_point_number[3:]
-    result: float = 0
-    for i in range(len(fraction)):
-        result += int(fraction[i]) * (2 ** (-(i + 1)))
-    if fixed_point_number[0] == "1":
-        return -result
-    else:
-        return result
-
-
-def convert_to_floating_point(number: (int, float)) -> list[str, str, str]:
+def convert_to_floating_point(number: (int, float)):
     if number == 0:
-        return ["0", "01111111", "0" * 23]
+        return ["0"] + list("01111111") + list("0" * 23)
     if number < 0:
         sign = "1"
     else:
@@ -301,79 +172,102 @@ def convert_to_floating_point(number: (int, float)) -> list[str, str, str]:
         binary_number_list: list = list(binary_number)
         binary_number_list.pop(binary_number_list.index("."))
         binary_number = "".join(binary_number_list)
-    exponent: str = binary_values_addition(int_to_binary(127, 9),
-                                           int_to_binary(digit_order, bit_number=9))[1:]
-    mantissa = binary_number[binary_number.find("1"):]
+    exponent = addition_two(127, digit_order)
+    exponent = exponent[8:]
+    mantissa = list(binary_number[binary_number.find("1"):])
     if len(mantissa) < 23:
-        mantissa += "0" * (23 - len(mantissa))
+        mantissa += ["0" for _ in range(23 - len(mantissa))]
     else:
         mantissa = mantissa[:23]
+    return [sign] + exponent + mantissa
 
-    return [sign, exponent, mantissa]
 
-
-def move_the_mantissa(mantissa: str, mantissa_moves: int) -> str:
+def move_the_mantissa(mantissa: list, mantissa_moves: int):
     if mantissa_moves == 0:
         return mantissa
-    return "0" * mantissa_moves + mantissa[:-mantissa_moves]
+    return ["0" for _ in range(mantissa_moves)] + mantissa[:-mantissa_moves]
 
 
-def mantissa_sum(floating_first: list[str, str, str],
-                 floating_second: list[str, str, str]) -> list[str, str, str]:
-    first_mantissa = additional_full_complement(floating_first[0] + floating_first[2])
-    second_mantissa = additional_full_complement(floating_second[0] + floating_second[2])
-    order: str = floating_first[1]
-    new_mantissa = addition(first_mantissa, second_mantissa)
-    if new_mantissa[:2] in ("10", "01"):
-        order = addition(order, "00000001")
-        new_mantissa = new_mantissa[0] + new_mantissa[:len(new_mantissa) - 1]
-    if new_mantissa[:2] == "00":
-        sign: str = "0"
+def mantissa_sum(floating_first,
+                 floating_second):
+    first_exp, second_exp = exponent(floating_first[1:9]), exponent(floating_second[1:9])
+    if first_exp > second_exp:
+        order = floating_first[1:9]
+    elif first_exp < second_exp:
+        order = floating_second[1:9]
     else:
-        sign: str = "1"
-    new_mantissa = full_complement(new_mantissa[1:])[1:]
-    new_mantissa = new_mantissa[1:] + "0"
-    new_floating_point = [sign, order, new_mantissa]
+        order = floating_second[1:9]
+    new_mantissa = list_addition(floating_first[9:], floating_second[9:], bits=23)
+    if new_mantissa[:2] == ['0', '0'] or new_mantissa[:2] == ["0", "1"]:
+        order = list_addition(["0", "0"] + order, list("0000000001"), bits=10)
+        order = order[2:]
+        new_floating_point = [floating_first[0]] + order + new_mantissa
+        return new_floating_point
+    new_mantissa = new_mantissa[1:] + ["0"]
+    new_floating_point = [floating_first[0]] + order + new_mantissa
     return new_floating_point
 
 
-def normalizing(floating_first: list[str, str, str], floating_second: list[str, str, str]) -> tuple:
-    if binary_module_greater_than(floating_first[1], floating_second[1]):
-        point_moves: int = 0
-        while not binary_equality(floating_first[1], floating_second[1]):
-            floating_second[1] = addition(floating_second[1], "00000001")
-            point_moves += 1
-        floating_second[2] = move_the_mantissa(floating_second[2], point_moves)
+def equal(first_value, second_value):
+    return first_value == second_value
+
+
+def normalizing(floating_first, floating_second):
+    first_ex, second_ex = exponent(floating_first[1:9]), exponent(floating_second[1:9])
+    diff = int_to_binary(abs(first_ex - second_ex))
+    if binary_greater(floating_first[1:9], floating_second[1:9]):
+        floating_second[1:9] = list_addition(["0", "0", "0"] + floating_second[1:9], diff, bits=11)[3:]
+        floating_second[9:] = move_the_mantissa(floating_second[9:], abs(first_ex - second_ex))
     else:
-        point_moves: int = 0
-        while not binary_equality(floating_first[1], floating_second[1]):
-            floating_first[1] = addition(floating_first[1], "00000001")
-            point_moves += 1
-        floating_first[2] = move_the_mantissa(floating_first[2], point_moves)
+        floating_first[1:9] = list_addition(["0", "0", "0"] + floating_first[1:9], diff, bits=11)[3:]
+        floating_first[9:] = move_the_mantissa(floating_first[9:], abs(first_ex - second_ex))
     return floating_first, floating_second
 
 
-def floating_point_summary(first_number: (int, float),
-                           second_number: (int, float)) -> list[str, str, str]:
-    floating_first: list[str, str, str] = convert_to_floating_point(first_number)
-    floating_second: list[str, str, str] = convert_to_floating_point(second_number)
-    floating_first, floating_second = normalizing(floating_first, floating_second)
-    new_floating_point = mantissa_sum(floating_first, floating_second)
-    return new_floating_point
+def exponent(value):
+    result = 0
+    for i in range(len(value)):
+        if value[i] == "1":
+            result += 2 ** (len(value) - 1 - i)
+        else:
+            continue
+    return result
 
 
-def floating_point_to_decimal(floating_point_number: list[str, str, str]):
-    decimal_degree: int = to_decimal_value("0" + floating_point_number[1]) - 127
-    digit_degree = 0
-    mantissa_result: float = 0
-    floating_point_number[2] = "1" + floating_point_number[2]
-    for digit in floating_point_number[2]:
-        mantissa_result += int(digit) * 2 ** digit_degree
-        digit_degree -= 1
-    if floating_point_number[0] == "1":
-        return -1 * mantissa_result * 2 ** decimal_degree
-    else:
-        return mantissa_result * 2 ** decimal_degree
+def addition_two(first_value, second_value, bits=16):
+    result: list = []
+    if first_value > 0 and second_value > 0:
+        result = list_addition(to_straight_code(first_value), to_straight_code(second_value), bits=bits)
+    elif first_value > 0 and second_value < 0:
+        first_result, second_result = to_straight_code(first_value), to_straight_code(second_value)
+        second_result = to_reverse_code(second_result)
+        result = list_addition(first_result, second_result, bits=bits)
+        if result[0] == "1":
+            result = to_reverse_code(result)
+    elif first_value < 0 and second_value > 0:
+        first_result, second_result = to_straight_code(first_value), to_straight_code(second_value)
+        first_result = to_reverse_code(first_result)
+        result = list_addition(first_result, second_result, bits=bits)
+        if result[0] == "1":
+            result = to_reverse_code(result)
+    elif first_value < 0 and second_value < 0:
+        first_result, second_result = to_straight_code(first_value), to_straight_code(second_value)
+        first_result, second_result = to_reverse_code(first_result), to_reverse_code(second_result)
+        result = list_addition(first_result, second_result, bits=bits)
+        if result[0] == "1":
+            result = to_reverse_code(result)
+    return result
+
+
+def to_reverse_code(value: list):
+    sign: str = [value[0]]
+    result_list = ["0" for _ in range(len(value) - 1)]
+    for index in range(len(value[1:])):
+        if value[1:][index] == "0":
+            result_list[index] = "1"
+        elif value[1:][index] == "1":
+            result_list[index] = "0"
+    return list_addition(sign + result_list, to_straight_code(1), bits=16)
 
 
 def multiplication(first_num, sec_num):
@@ -417,8 +311,8 @@ def convert(n, base_system=2, head_system=10):
         return value[n]
 
 
-def to_straight_code(number):
-    str_code = ["0" for i in range(16)]
+def to_straight_code(number, bits=16):
+    str_code = ["0" for i in range(bits)]
     if number < 0:
         number = abs(number)
         str_code[0] = "1"
@@ -430,16 +324,12 @@ def to_straight_code(number):
 
 def test_addition(x, y) -> None:
     print("Addition")
-    result = binary_int_sum(x, y)
-    print(binary_int_sum(x, y))
-    print(to_decimal_value(result))
+    addition_two(x, y)
 
 
 def test_subtraction(x, y) -> None:
     print("Subtraction")
-    result: (int, float) = to_decimal_value(binary_difference(x, y))
-    print(binary_difference(x, y))
-    print(result)
+    addition_two(x, -y)
 
 
 def test_multiplication(x, y) -> None:
@@ -458,13 +348,15 @@ def test_division(x, y) -> None:
 
 def test_floating_point_addition(x, y) -> None:
     print("Floating point")
-    result = floating_point_to_decimal(floating_point_summary(x, y))
-    print(floating_point_summary(x, y))
-    print(result)
+    floating_first = convert_to_floating_point(x)
+    floating_second = convert_to_floating_point(y)
+    floating_first, floating_second = normalizing(floating_first, floating_second)
+    new_floating_point = mantissa_sum(floating_first, floating_second)
+    print(new_floating_point)
 
 
 test_addition(6, -12)
 test_subtraction(3, 7)
 test_multiplication(11, 21)
 test_division(25, 7)
-test_floating_point_addition(0.5, 10.625)
+test_floating_point_addition(0.5, 5.5)
