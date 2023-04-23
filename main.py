@@ -90,8 +90,8 @@ def convert_to_number_format(x: str) -> int:
 
 
 def compare(x: str, y: str) -> bool:
-    compare_first, compare_second = exponent(x), exponent(y)
-    return compare_first > compare_second
+    comp_x, comp_y = exponent(x), exponent(y)
+    return comp_x > comp_y
 
 
 def convert_from_number(result_val: int, n: int = 16) -> str:
@@ -187,16 +187,16 @@ def float_(x: (int, float)):
 
 def creating_float(bin_, factor, flag):
     exponent_ = sum_of_two_values(127, factor)[8:]
-    mantissa = list(bin_[bin_.find("1"):])
-    if len(mantissa) < 23:
-        mantissa += ["0" for _ in range(23 - len(mantissa))]
+    m = list(bin_[bin_.find("1"):])
+    if len(m) < 23:
+        m += ["0" for _ in range(23 - len(m))]
     else:
-        mantissa = mantissa[:23]
-    return [flag] + exponent_ + mantissa
+        m = m[:23]
+    return [flag] + exponent_ + m
 
 
-def changing(mantissa: list, n: int):
-    return mantissa if n == 0 else ["0" for _ in range(n)] + mantissa[:-n]
+def changing(m: list, n: int):
+    return m if n == 0 else ["0" for _ in range(n)] + m[:-n]
 
 
 def result_floating_point(x,
@@ -208,19 +208,19 @@ def result_floating_point(x,
         order = y[1:9]
     else:
         order = y[1:9]
-    created_mantissa = sum_with_lists(x[9:], y[9:], value_of_bits=23)
-    if created_mantissa[:2] == ['0', '0'] or created_mantissa[:2] == ["0", "1"]:
-        return overflow(created_mantissa, order, x)
-    created_mantissa = created_mantissa[1:] + ["0"]
-    created_float = [x[0]] + order + created_mantissa
+    created_m = sum_with_lists(x[9:], y[9:], value_of_bits=23)
+    if created_m[:2] == ['0', '0'] or created_m[:2] == ["0", "1"]:
+        return overflow(created_m, order, x)
+    created_m = created_m[1:] + ["0"]
+    created_float = [x[0]] + order + created_m
     return created_float
 
 
-def overflow(new_mantissa, order, floating_first):
+def overflow(new_m, order, floating_first):
     order = sum_with_lists(["0", "0"] + order, list("0000000001"), value_of_bits=10)
     order = order[2:]
-    new_floating_point = [floating_first[0]] + order + new_mantissa
-    return new_floating_point
+    new_float = [floating_first[0]] + order + new_m
+    return new_float
 
 
 def equal(first_value, second_value):
