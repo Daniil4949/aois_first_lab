@@ -1,108 +1,116 @@
-def shift_left(value):
-    result = value[1:]
-    result.append("0")
-    return result
+def moving_to_the_left(value):
+    moving_value = value[1:]
+    moving_value.append("0")
+    return moving_value
 
 
-def complement(value):
-    result = []
-    invert = False
-    for i in reversed(value):
-        if i == "0" and invert is False:
-            result.append("0")
-        elif i == "1" and invert is False:
-            invert = True
-            result.append("1")
+def complementation(x):
+    value = []
+    flag = False
+    for i in reversed(x):
+        if i == "0" and flag is False:
+            value.append("0")
+        elif i == "1" and flag is False:
+            flag = True
+            value.append("1")
         elif i == "1":
-            result.append("0")
+            value.append("0")
         else:
-            result.append("1")
-    result.reverse()
-    return result
+            value.append("1")
+    value.reverse()
+    return value
 
 
-def list_addition(first_value, second_value, bits=8):
-    summary = ["0" for _ in range(bits)]
+def sum_with_lists(x, y, value_of_bits=8):
+    summary = ["0" for _ in range(value_of_bits)]
     carry: int = 0
-    for i in range(bits - 1, -1, -1):
-        if first_value[i] == "0" and second_value[i] == "0" and carry == 0:
+    for i in range(value_of_bits - 1, -1, -1):
+        if x[i] == "0" and y[i] == "0" and carry == 0:
             summary[i] = "0"
             carry = 0
-        elif first_value[i] == "0" and second_value[i] == "0" and carry == 1:
+        elif x[i] == "0" and y[i] == "0" and carry == 1:
             summary[i] = "1"
             carry = 0
-        elif first_value[i] == "0" and second_value[i] == "1" and carry == 0:
+        elif x[i] == "0" and y[i] == "1" and carry == 0:
             summary[i] = "1"
             carry = 0
-        elif first_value[i] == "0" and second_value[i] == "1" and carry == 1:
+        elif x[i] == "0" and y[i] == "1" and carry == 1:
             summary[i] = "0"
             carry = 1
-        elif first_value[i] == "1" and second_value[i] == "0" and carry == 0:
+        elif x[i] == "1" and y[i] == "0" and carry == 0:
             summary[i] = "1"
             carry = 0
-        elif first_value[i] == "1" and second_value[i] == "0" and carry == 1:
+        elif x[i] == "1" and y[i] == "0" and carry == 1:
             summary[i] = "0"
             carry = 1
-        elif first_value[i] == "1" and second_value[i] == "1" and carry == 0:
+        elif x[i] == "1" and y[i] == "1" and carry == 0:
             summary[i] = "0"
             carry = 1
-        elif first_value[i] == "1" and second_value[i] == "1" and carry == 1:
+        elif x[i] == "1" and y[i] == "1" and carry == 1:
             summary[i] = "1"
             carry = 1
     return summary
 
 
-def float_to_binary(value: float, bit_number: int = 16):
-    if value < 0:
-        minus_bit = "1"
-        value *= -1
+def float_to_binary(x: float, n: int = 16):
+    if x < 0:
+        bit = "1"
+        x *= -1
     else:
-        minus_bit = "0"
-    int_part = int(value)
-    float_part: float = value - float(int_part)
-    result: str = int_to_binary(int_part)[1:]
-    if "1" not in result:
-        result = minus_bit + "0."
+        bit = "0"
+    int_ = int(x)
+    float_res: float = x - float(int_)
+    val: str = convert_from_number(int_)[1:]
+    if "1" not in val:
+        val = bit + "0."
     else:
-        result = minus_bit + result[result.find("1"):] + "."
-    for i in range(bit_number - len(result) - 1):
-        float_part *= 2
-        if int(float_part) == 0:
-            result += "0"
+        val = bit + val[val.find("1"):] + "."
+    return get_float_part(val, float_res, n)
+
+
+def get_float_part(res, float_res, val):
+    for i in range(val - len(res) - 1):
+        float_res *= 2
+        if int(float_res) == 0:
+            res += "0"
         else:
-            result += "1"
-        float_part = float_part - float(int(float_part))
-    return result
+            res += "1"
+        float_res = float_res - float(int(float_res))
+    return res
 
 
-def to_decimal_value(binary_value: str) -> int:
-    number: int = 0
-    for i in range(1, len(binary_value)):
-        number += 2 ** (len(binary_value) - 1 - i) * int(binary_value[i])
-    if int(binary_value[0]) == 0:
-        return number
+def convert_to_number_format(x: str) -> int:
+    val: int = 0
+    for i in range(1, len(x)):
+        val += 2 ** (len(x) - 1 - i) * int(x[i])
+    if int(x[0]) == 0:
+        return val
     else:
-        return -number
+        return -val
 
 
-def binary_greater(first_value: str, second_value: str) -> bool:
-    first_example, second_example = exponent(first_value), exponent(second_value)
-    return first_example > second_example
+def compare(x: str, y: str) -> bool:
+    compare_first, compare_second = exponent(x), exponent(y)
+    return compare_first > compare_second
 
 
-def int_to_binary(value: int, bits: int = 16) -> str:
-    result: str = ""
-    if value < 0:
-        minus_bit = "1"
-        value *= -1
+def convert_from_number(result_val: int, n: int = 16) -> str:
+    val: str = ""
+    if result_val < 0:
+        bit = "1"
+        result_val *= -1
     else:
-        minus_bit = "0"
-    while value != 0:
-        result = str(value % 2) + result
-        value = value // 2
-    result = minus_bit + result
-    result = result[:1] + "0" * (bits - len(result)) + result[1:]
-    return result
+        bit = "0"
+    while result_val != 0:
+        val = str(result_val % 2) + val
+        result_val = result_val // 2
+    return make_full_number(val, bit, n)
+
+
+def make_full_number(x, flag, val):
+    x = flag + x
+    x = x[:1] + "0" * (val - len(x)) + x[1:]
+    return x
 
 
 def get_binary(value_str):
@@ -119,89 +127,98 @@ def get_binary(value_str):
     return bin_int_part
 
 
-def division(dividend, divisor):
-    if divisor == '0':
+def div(x, y):
+    if y == '0':
         raise Exception("Divisor cannot be zero.")
     else:
-        dividend = get_binary(dividend)
-        if len(dividend) < 8:
-            dividend.reverse()
-            for i in range(0, 8 - len(dividend)):
-                dividend.append("0")
-            dividend.reverse()
-        divisor = get_binary(divisor)
-        if len(divisor) < 8:
-            divisor.reverse()
-            for i in range(0, 8 - len(divisor)):
-                divisor.append("0")
-            divisor.reverse()
+        x = get_binary(x)
+        if len(x) < 8:
+            x.reverse()
+            for i in range(0, 8 - len(x)):
+                x.append("0")
+            x.reverse()
+        y = get_binary(y)
+        if len(y) < 8:
+            y.reverse()
+            for i in range(0, 8 - len(y)):
+                y.append("0")
+            y.reverse()
         bytes_values = ["0", "0", "0", "0", "0", "0", "0", "0"]
-        first_value = divisor
-        second_value = dividend
-        for i in range(8):
-            complemented_second_value = bytes_values + second_value
-            temp_value = shift_left(complemented_second_value)
-            bytes_values = temp_value[:8]
-            second_value = temp_value[8:]
-            bytes_values = list_addition(bytes_values, complement(first_value))
-            if bytes_values[0] == "1":
-                second_value[-1] = "0"
-                bytes_values = list_addition(bytes_values, first_value)
-            else:
-                second_value[-1] = "1"
-        return "".join(second_value)
+        first_value = y
+        second_value = x
+        return dividing(first_value, second_value, bytes_values)
 
 
-def convert_to_floating_point(number: (int, float)):
-    if number < 0:
+def dividing(x, y, n):
+    for i in range(8):
+        complemented_second_value = n + y
+        temp_value = moving_to_the_left(complemented_second_value)
+        n = temp_value[:8]
+        y = temp_value[8:]
+        n = sum_with_lists(n, complementation(x))
+        if n[0] == "1":
+            y[-1] = "0"
+            n = sum_with_lists(n, x)
+        else:
+            y[-1] = "1"
+    return "".join(y)
+
+
+def float_(x: (int, float)):
+    if x < 0:
         sign = "1"
     else:
         sign = "0"
-    if isinstance(number, int):
-        binary_number = int_to_binary(number)[1:]
-        digit_order: int = len(binary_number) - (binary_number.find("1") + 1)
+    if isinstance(x, int):
+        bin_ = convert_from_number(x)[1:]
+        factor: int = len(bin_) - (bin_.find("1") + 1)
     else:
-        binary_number = float_to_binary(number, bit_number=32)[1:]
-        digit_order = binary_number.find(".") - (binary_number.find("1") + 1)
-        if digit_order < 0:
-            digit_order += 1
+        bin_ = float_to_binary(x, n=32)[1:]
+        factor = bin_.find(".") - (bin_.find("1") + 1)
+        if factor < 0:
+            factor += 1
         else:
-            digit_order += 0
-        binary_number_list: list = list(binary_number)
-        binary_number_list.pop(binary_number_list.index("."))
-        binary_number = "".join(binary_number_list)
-    exponent = addition_two(127, digit_order)
-    exponent = exponent[8:]
-    mantissa = list(binary_number[binary_number.find("1"):])
+            factor += 0
+        list_bin_: list = list(bin_)
+        list_bin_.pop(list_bin_.index("."))
+        bin_ = "".join(list_bin_)
+    return creating_float(bin_, factor, sign)
+
+
+def creating_float(bin_, factor, flag):
+    exponent_ = sum_of_two_values(127, factor)[8:]
+    mantissa = list(bin_[bin_.find("1"):])
     if len(mantissa) < 23:
         mantissa += ["0" for _ in range(23 - len(mantissa))]
     else:
         mantissa = mantissa[:23]
-    return [sign] + exponent + mantissa
+    return [flag] + exponent_ + mantissa
 
 
-def move_the_mantissa(mantissa: list, mantissa_moves: int):
-    if mantissa_moves == 0:
-        return mantissa
-    return ["0" for _ in range(mantissa_moves)] + mantissa[:-mantissa_moves]
+def changing(mantissa: list, n: int):
+    return mantissa if n == 0 else ["0" for _ in range(n)] + mantissa[:-n]
 
 
-def mantissa_sum(floating_first,
-                 floating_second):
-    first_exp, second_exp = exponent(floating_first[1:9]), exponent(floating_second[1:9])
-    if first_exp > second_exp:
-        order = floating_first[1:9]
-    elif first_exp < second_exp:
-        order = floating_second[1:9]
+def result_floating_point(x,
+                          y):
+    x_exp, y_exp = exponent(x[1:9]), exponent(y[1:9])
+    if x_exp > y_exp:
+        order = x[1:9]
+    elif x_exp < y_exp:
+        order = y[1:9]
     else:
-        order = floating_second[1:9]
-    new_mantissa = list_addition(floating_first[9:], floating_second[9:], bits=23)
-    if new_mantissa[:2] == ['0', '0'] or new_mantissa[:2] == ["0", "1"]:
-        order = list_addition(["0", "0"] + order, list("0000000001"), bits=10)
-        order = order[2:]
-        new_floating_point = [floating_first[0]] + order + new_mantissa
-        return new_floating_point
-    new_mantissa = new_mantissa[1:] + ["0"]
+        order = y[1:9]
+    created_mantissa = sum_with_lists(x[9:], y[9:], value_of_bits=23)
+    if created_mantissa[:2] == ['0', '0'] or created_mantissa[:2] == ["0", "1"]:
+        return overflow(created_mantissa, order, x)
+    created_mantissa = created_mantissa[1:] + ["0"]
+    created_float = [x[0]] + order + created_mantissa
+    return created_float
+
+
+def overflow(new_mantissa, order, floating_first):
+    order = sum_with_lists(["0", "0"] + order, list("0000000001"), value_of_bits=10)
+    order = order[2:]
     new_floating_point = [floating_first[0]] + order + new_mantissa
     return new_floating_point
 
@@ -210,16 +227,16 @@ def equal(first_value, second_value):
     return first_value == second_value
 
 
-def normalizing(floating_first, floating_second):
-    first_ex, second_ex = exponent(floating_first[1:9]), exponent(floating_second[1:9])
-    diff = int_to_binary(abs(first_ex - second_ex))
-    if binary_greater(floating_first[1:9], floating_second[1:9]):
-        floating_second[1:9] = list_addition(["0", "0", "0"] + floating_second[1:9], diff, bits=11)[3:]
-        floating_second[9:] = move_the_mantissa(floating_second[9:], abs(first_ex - second_ex))
+def alignment(x, y):
+    ex_1, ex_2 = exponent(x[1:9]), exponent(y[1:9])
+    diff = convert_from_number(abs(ex_1 - ex_2))
+    if compare(x[1:9], y[1:9]):
+        y[1:9] = sum_with_lists(["0", "0", "0"] + y[1:9], diff, value_of_bits=11)[3:]
+        y[9:] = changing(y[9:], abs(ex_1 - ex_2))
     else:
-        floating_first[1:9] = list_addition(["0", "0", "0"] + floating_first[1:9], diff, bits=11)[3:]
-        floating_first[9:] = move_the_mantissa(floating_first[9:], abs(first_ex - second_ex))
-    return floating_first, floating_second
+        x[1:9] = sum_with_lists(["0", "0", "0"] + x[1:9], diff, value_of_bits=11)[3:]
+        x[9:] = changing(x[9:], abs(ex_1 - ex_2))
+    return x, y
 
 
 def exponent(value):
@@ -232,71 +249,86 @@ def exponent(value):
     return result
 
 
-def addition_two(first_value, second_value, bits=16):
-    result: list = []
-    if first_value > 0 and second_value > 0:
-        result = list_addition(to_straight_code(first_value), to_straight_code(second_value), bits=bits)
-    elif first_value > 0 and second_value < 0:
-        first_result, second_result = to_straight_code(first_value), to_straight_code(second_value)
-        second_result = to_reverse_code(second_result)
-        result = list_addition(first_result, second_result, bits=bits)
-        if result[0] == "1":
-            result = to_reverse_code(result)
-    elif first_value < 0 and second_value > 0:
-        first_result, second_result = to_straight_code(first_value), to_straight_code(second_value)
-        first_result = to_reverse_code(first_result)
-        result = list_addition(first_result, second_result, bits=bits)
-        if result[0] == "1":
-            result = to_reverse_code(result)
-    elif first_value < 0 and second_value < 0:
-        first_result, second_result = to_straight_code(first_value), to_straight_code(second_value)
-        first_result, second_result = to_reverse_code(first_result), to_reverse_code(second_result)
-        result = list_addition(first_result, second_result, bits=bits)
-        if result[0] == "1":
-            result = to_reverse_code(result)
-    return result
+def sum_of_two_values(x, y, n=16):
+    val: list = []
+    if x > 0 and y > 0:
+        val = sum_with_lists(straight(x), straight(y), value_of_bits=n)
+    elif x > 0 and y < 0:
+        val = negative_second_addition(x, y, n)
+    elif x < 0 and y > 0:
+        val = negative_first_addition(x, y, n)
+    elif x < 0 and y < 0:
+        val = negative_addition(x, y, n)
+    return val
 
 
-def to_reverse_code(value: list):
-    sign: str = [value[0]]
-    result_list = ["0" for _ in range(len(value) - 1)]
-    for index in range(len(value[1:])):
-        if value[1:][index] == "0":
-            result_list[index] = "1"
-        elif value[1:][index] == "1":
-            result_list[index] = "0"
-    return list_addition(sign + result_list, to_straight_code(1), bits=16)
+def negative_addition(x, y, n):
+    x, y = straight(x), straight(y)
+    x, y = rev(x), rev(y)
+    val = sum_with_lists(x, y, value_of_bits=n)
+    if val[0] == "1":
+        val = rev(val)
+    return val
 
 
-def multiplication(first_num, sec_num):
-    answer = ["0" for _ in range(16)]
-    if (first_num < 0) or (sec_num < 0):
-        answer[0] = '1'
-    if (first_num < 0) and (sec_num < 0):
-        answer[0] = '0'
-    first_num, sec_num = abs(int(first_num)), abs(int(sec_num))
-    if abs(first_num * sec_num) > 32767:
+def negative_first_addition(x, y, n):
+    x, y = straight(x), straight(y)
+    x = rev(x)
+    val = sum_with_lists(x, y, value_of_bits=n)
+    if val[0] == "1":
+        val = rev(val)
+    return val
+
+
+def negative_second_addition(x, y, n):
+    x, y = straight(x), straight(y)
+    y = rev(y)
+    val = sum_with_lists(x, y, value_of_bits=n)
+    if val[0] == "1":
+        val = rev(val)
+    return val
+
+
+def rev(x: list):
+    flag: str = [x[0]]
+    val = ["0" for _ in range(len(x) - 1)]
+    for index in range(len(x[1:])):
+        if x[1:][index] == "0":
+            val[index] = "1"
+        elif x[1:][index] == "1":
+            val[index] = "0"
+    return sum_with_lists(flag + val, straight(1), value_of_bits=16)
+
+
+def multiplication(x, y):
+    res = ["0" for _ in range(16)]
+    if (x < 0) or (y < 0):
+        res[0] = '1'
+    if (x < 0) and (y < 0):
+        res[0] = '0'
+    x, y = abs(int(x)), abs(int(y))
+    if abs(x * y) > 32767:
         raise Exception("You are out of range")
     else:
-        len_array = len(convert(sec_num))
-        first_num, sec_num = to_straight_code(first_num), to_straight_code(sec_num)
-        for i in range(len_array):
+        len_ = len(convert(y))
+        x, y = straight(x), straight(y)
+        for i in range(len_):
             additional_array = ['0' for i in range(16)]
             overload = 0
             for index in range(15):
                 index = 15 - index
-                additional_array[index] = int(sec_num[15 - i]) * int(first_num[index])
-                first_additional_value, second_additional_value = int(answer[index - i]), int(additional_array[index])
+                additional_array[index] = int(y[15 - i]) * int(x[index])
+                first_additional_value, second_additional_value = int(res[index - i]), int(additional_array[index])
                 if first_additional_value + second_additional_value + overload < 2:
-                    answer[index - i] = str(first_additional_value + second_additional_value + overload)
+                    res[index - i] = str(first_additional_value + second_additional_value + overload)
                     overload = 0
                 elif first_additional_value + second_additional_value + overload == 2:
-                    answer[index - i] = '0'
+                    res[index - i] = '0'
                     overload = 1
                 else:
-                    answer[index - i] = '1'
+                    res[index - i] = '1'
                     overload = 1
-        return "".join(answer)
+        return "".join(res)
 
 
 def convert(n, base_system=2, head_system=10):
@@ -309,54 +341,47 @@ def convert(n, base_system=2, head_system=10):
         return value[n]
 
 
-def to_straight_code(number, bits=16):
-    str_code = ["0" for i in range(bits)]
-    if number < 0:
-        number = abs(number)
+def straight(x, n=16):
+    str_code = ["0" for _ in range(n)]
+    if x < 0:
+        x = abs(x)
         str_code[0] = "1"
-    number = list(str(convert(number)))
-    for item in range(len(number)):
-        str_code[len(str_code) - (item + 1)] = number[len(number) - (item + 1)]
+    x = list(str(convert(x)))
+    for item in range(len(x)):
+        str_code[len(str_code) - (item + 1)] = x[len(x) - (item + 1)]
     return str_code
 
 
-def test_addition(x, y) -> None:
+def main():
+    print("Enter first int value")
+    x = int(input())
+    print("Enter second int value")
+    y = int(input())
     print("Addition")
-    result = addition_two(x, y)
-    print(to_decimal_value("".join(result)))
-
-
-def test_subtraction(x, y) -> None:
+    val = sum_of_two_values(x, y)
+    print(convert_to_number_format("".join(val)))
     print("Subtraction")
-    result = addition_two(x, -y)
-    print(to_decimal_value("".join(result)))
-
-
-def test_multiplication(x, y) -> None:
+    val = sum_of_two_values(x, -y)
+    print(convert_to_number_format("".join(val)))
     print("Multiplication")
-    result = multiplication(x, y)
-    print(result)
-    print(to_decimal_value(result))
-
-
-def test_division(x, y) -> None:
+    val = multiplication(x, y)
+    print(val)
+    print(convert_to_number_format(val))
     print("Division")
-    result = (division(str(x), str(y)))
-    print(division(str(x), str(y)))
-    print(to_decimal_value(result))
-
-
-def test_floating_point_addition(x, y) -> None:
+    val = (div(str(x), str(y)))
+    print(div(str(x), str(y)))
+    print(convert_to_number_format(val))
     print("Floating point")
-    floating_first = convert_to_floating_point(x)
-    floating_second = convert_to_floating_point(y)
-    floating_first, floating_second = normalizing(floating_first, floating_second)
-    new_floating_point = mantissa_sum(floating_first, floating_second)
+    print("Enter first float value")
+    x = float(input())
+    print("Enter second float value")
+    y = float(input())
+    x = float_(x)
+    y = float_(y)
+    x, y = alignment(x, y)
+    new_floating_point = result_floating_point(x, y)
     print(new_floating_point)
 
 
-test_addition(6, -12)
-test_subtraction(3, 7)
-test_multiplication(11, 21)
-test_division(25, 7)
-test_floating_point_addition(2.5, 5.9)
+if __name__ == "__main__":
+    main()
