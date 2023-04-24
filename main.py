@@ -8,9 +8,9 @@ def complementation(x):
     value = []
     flag = False
     for i in reversed(x):
-        if i == "0" and flag is False:
+        if i == "0" and not flag:
             value.append("0")
-        elif i == "1" and flag is False:
+        elif i == "1" and not flag:
             flag = True
             value.append("1")
         elif i == "1":
@@ -187,6 +187,8 @@ def float_(x: (int, float)):
 
 def creating_float(bin_, factor, flag):
     exponent_ = sum_of_two_values(127, factor)[8:]
+    if factor == 0:
+        exponent_ = ["0", "1", "1", "1", "1", "1", "1", "1"]
     m = list(bin_[bin_.find("1"):])
     if len(m) < 23:
         m += ["0" for _ in range(23 - len(m))]
